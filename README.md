@@ -1,1 +1,2 @@
-# shopping_list
+Shopping list
+Frontendové systémy
