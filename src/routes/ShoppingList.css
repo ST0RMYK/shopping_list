@@ -1,0 +1,204 @@
+.left-side-bar {
+    height: 100%;
+    position: fixed;
+    background-color: #e7e7e7;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 25%;
+    overflow-x: hidden;
+    padding: 20px 15px;
+    box-shadow: 0 0 3px 0 #878787;
+}
+
+.button-area {
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 25%;
+    overflow-x: hidden;
+}
+
+.left-side-bar h3 {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.menu-button {
+    width: auto;
+    margin-top: 20px;
+    margin-left: 5%;
+}
+
+.hamburger-icon {
+    position: relative;
+    top: -2px;
+    margin-right: 10px;
+}
+
+.close-icon {
+    color: red;
+    cursor: pointer;
+}
+
+.add-icon {
+    position: relative;
+    top: -2.2px;
+    margin-right: 7px;
+}
+
+.trash-icon {
+    position: relative;
+    top: -2.2px;
+    margin-right: 7px;
+    color: red;
+}
+
+.lists-button {
+    background-color: white;
+    border: none;
+    color: black;
+    text-align: start;
+    box-shadow: 0 0 3px 0 #878787;
+    margin: 10px 0;
+}
+
+.lists-button:hover {
+    background-color: #ccffcc;
+}
+
+.add-list-dialog {
+    min-width: 60%;
+}
+
+.text-area {
+    min-height: 200px;
+}
+
+.detail-view {
+    margin-top: 20px;
+    margin-left: 27%;
+    margin-right: 2%;
+}
+
+.detail-view h1 {
+    text-align: center;
+}
+
+.detail-view h4 {
+    text-align: center;
+}
+
+.edit-button {
+    float: right;
+    width: auto;
+    margin-top: 100px;
+}
+
+.edit-icon {
+    position: relative;
+    top: -2px;
+    margin-right: 7px;
+}
+
+.tip-message {
+    text-align: center;
+}
+
+.item-area {
+    padding: 0;
+}
+
+.check-icon {
+    position: relative;
+    top: -6px;
+    margin-right: 7px;
+    transition: 0.5s;
+}
+
+.check-icon:hover {
+    color: #04B600;
+    transition: 0.5s;
+}
+
+.item {
+    font-size: 26px;
+}
+
+@media screen and (max-width: 1278px) {
+    .left-side-bar {
+        width: 30%;
+    }
+    .detail-view {
+        margin-left: 32%;
+    }
+    .button-area {
+        height: 100%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 30%;
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .left-side-bar {
+        width: 35%;
+    }
+
+    .detail-view {
+        margin-left: 37%;
+    }
+
+    .add-list-dialog {
+        min-width: 80%;
+    }
+
+    .button-area {
+        height: 100%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 35%;
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .left-side-bar {
+        width: 100%;
+    }
+
+    .detail-view {
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+
+    .add-list-dialog {
+        min-width: 100%;
+    }
+
+    .button-area {
+        background-color: white;
+        height: auto;
+        position: relative;
+        display: block;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .menu-button {
+        width: auto;
+        margin-top: 20px;
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+}
