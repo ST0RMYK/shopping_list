@@ -1,83 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './ShoppingList.css'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { IoCloseCircleSharp } from 'react-icons/io5'
 import { BiSolidBookAdd } from 'react-icons/bi'
 import { BsFillTrashFill, BsBagCheckFill } from 'react-icons/bs'
 import { AiFillEdit } from 'react-icons/ai'
+import axios from "axios";
+import mockUsers from "./mockData";
 
 const ShoppingList = () => {
-    const [users, setUsers] = useState([
-        {
-            id: 0,
-            name: "User 1",
-            lists: [
-                {
-                    id: 0,
-                    name: "Tesco",
-                    desc: "Co zítra musím nakoupit",
-                    items: [],
-                },
-                {
-                    id: 1,
-                    name: "OBI",
-                    desc: "Rekonstrukce ložnice",
-                    items: [],
-                },
-            ],
-        },
-        {
-            id: 1,
-            name: "User 2",
-            lists: [
-                {
-                    id: 0,
-                    name: "Vánoce 2023",
-                    desc: "Můj seznam dárků, co musím koupit do Vánoc",
-                    items: [],
-                },
-            ],
-        },
-    ]);
-
+    const [users, setUsers] = useState(mockUsers);
     const [navShow, setNavShow] = useState(true);
     const [createModalShow, setCreateModalShow] = useState(false);
-
     const [newList, setNewList] = useState({ name: "", desc: "" });
     const [openedList, setOpenedList] = useState(null);
     const [editedList, setEditedList] = useState(null);
     const [item, setItem] = useState("");
-
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+    const [selectedUser, setSelectedUser] = useState({ lists: [] });
+    
 
-    const selectedUser = users[selectedUserIndex];
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = async () => {
+        try {
+            const response = await axios.get("/api/users");
+            setUsers(response.data);
+        } catch (error) {
+            console.error("Chyba při načítání dat ze serveru", error);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewList({ ...newList, [name]: value });
     };
 
-    const addList = () => {
-        if (newList.name.trim() === '' || newList.desc.trim() === '') {
-            alert('Název nebo popisek nesmí být prázdný!');
-        } else {
-            const id = selectedUser.lists.length;
-            const updatedLists = [...selectedUser.lists, { id, ...newList, items: [] }];
+    const addList = async () => {
+        try {
+            const response = await axios.post(
+                `api/users/${selectedUser.id}/lists`,
+                newList
+            );
             const updatedUsers = [...users];
-            updatedUsers[selectedUserIndex].lists = updatedLists;
+            updatedUsers[selectedUserIndex].lists = [...updatedUsers[selectedUserIndex].lists, response.data];
             setUsers(updatedUsers);
             setNewList({ name: "", desc: "", items: [] });
+        } catch (error) {
+            console.error("Chyba při vytváření seznamu", error);
         }
     };
 
-    const deleteList = (id) => {
-        const updatedLists = selectedUser.lists.filter((list) => list.id !== id);
-        const updatedUsers = [...users];
-        updatedUsers[selectedUserIndex].lists = updatedLists;
-        setUsers(updatedUsers);
-        if (openedList && openedList.id === id) {
-            setOpenedList(null);
-            setEditedList(null);
+    const deleteList = async (id) => {
+        try {
+            await axios.delete(`/api/lists/${id}`);
+            const updatedLists = selectedUser.lists.filter((list) => list.id !== id);
+            const updatedUsers = [...users];
+            updatedUsers[selectedUserIndex].lists = updatedLists;
+            setUsers(updatedUsers);
+            if (openedList && openedList.id === id) {
+                setOpenedList(null);
+                setEditedList(null);
+            }
+        } catch (error) {
+            console.error("Chyba při mazání seznamu", error);
         }
     };
 
@@ -92,26 +80,36 @@ const ShoppingList = () => {
         setEditedList({ ...editedList, [name]: value });
     };
 
-    const saveEditedList = () => {
-        const updatedLists = selectedUser.lists.map((list) =>
-            list.id === openedList.id ? { ...list, ...editedList } : list
-        );
-        const updatedUsers = [...users];
-        updatedUsers[selectedUserIndex].lists = updatedLists;
-        setUsers(updatedUsers);
-        setOpenedList({ ...openedList, ...editedList });
-        setEditedList(null);
+    const saveEditedList = async () => {
+        try {
+            const response = await axios.put(
+                `/api/lists/${openedList.id}`,
+                editedList
+            );
+            const updatedLists = selectedUser.lists.map((list) =>
+                list.id === openedList.id ? response.data : list
+            );
+            const updatedUsers = [...users];
+            updatedUsers[selectedUserIndex].lists = updatedLists;
+            setUsers(updatedUsers);
+            setOpenedList(response.data);
+            setEditedList(null);
+        } catch (error) {
+            console.error("Chyba při aktualizaci seznamu", error);
+        }
     };
 
     const handleItemChange = (e) => {
         setItem(e.target.value);
     };
 
-    const addItem = () => {
-        if (item.trim() === '') {
-            alert('Položka nesmí být prázdná!');
-        } else if (openedList && openedList.items) {
-            const updatedItems = openedList.items.concat(item);
+    const addItem = async () => {
+        try {
+            const response = await axios.post(
+                `/api/lists/${openedList.id}/items`,
+                { item }
+            );
+            const updatedItems = [...openedList.items, response.data];
             const updatedLists = selectedUser.lists.map((list) =>
                 list.id === openedList.id
                     ? { ...list, items: updatedItems }
@@ -122,11 +120,14 @@ const ShoppingList = () => {
             setUsers(updatedUsers);
             setOpenedList({ ...openedList, items: updatedItems });
             setItem("");
+        } catch (error) {
+            console.error("Chyba při přidávání položky", error);
         }
     };
 
-    const deleteItem = (itemIndex) => {
-        if (openedList && openedList.items) {
+    const deleteItem = async (itemIndex) => {
+        try {
+            await axios.delete(`/api/items/${openedList.items[itemIndex].id}`);
             const updatedItems = openedList.items.filter(
                 (item, index) => index !== itemIndex
             );
@@ -139,6 +140,8 @@ const ShoppingList = () => {
             updatedUsers[selectedUserIndex].lists = updatedLists;
             setUsers(updatedUsers);
             setOpenedList({ ...openedList, items: updatedItems });
+        } catch (error) {
+            console.error("Chyba při mazání položky", error);
         }
     };
 
